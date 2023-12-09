@@ -4,6 +4,7 @@ import { init } from '@/middlewares/initMiddleware';
 import bodyParser from 'body-parser';
 import ESess from 'express-session';
 import UsersRoute from '@/routes/UserRoutes';
+import VotesRoutes from './routes/VotesRoute';
 
 EnvLoader.loadEnv();
 
@@ -19,6 +20,7 @@ app.use(ESess({
   saveUninitialized: true,
 }));
 app.use(UsersRoute);
+app.use("/votes", VotesRoutes);
 
 app.listen(PORT, () => {
   console.log('listening to server on port:', PORT);

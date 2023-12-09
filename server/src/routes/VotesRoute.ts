@@ -5,7 +5,9 @@ import { Router } from "express";
 const VotesRoutes = Router();
 
 VotesRoutes.post('/', isAuthenticated, VotesController.addNewVote);
-VotesRoutes.get('/vote/:id', isAuthenticated, VotesController.showVote);
 VotesRoutes.get('/', VotesController.showVotes);
-VotesRoutes.put('/vote/:id', isAuthenticated, VotesController.editVote);
-VotesRoutes.delete('/vote/:id', isAuthenticated, VotesController.deleteVote);
+VotesRoutes.get('/:id', VotesController.showVote);
+VotesRoutes.put('/:id', isAuthenticated, VotesController.editVote);
+VotesRoutes.delete('/:id', isAuthenticated, VotesController.deleteVote);
+
+export default VotesRoutes;

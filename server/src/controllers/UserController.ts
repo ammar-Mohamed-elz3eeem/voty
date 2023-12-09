@@ -27,7 +27,7 @@ export default class UserController {
     try {
       const userData: ILoginUser = { ...req.body };
       const user = await User.findOne({$or: [{email: userData.username}, {username: userData.username}]});
-
+      console.log(userData);
       if (!user) {
         throw new Error("user credentials is wrong");
       }
