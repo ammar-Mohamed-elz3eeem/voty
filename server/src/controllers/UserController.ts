@@ -1,8 +1,9 @@
-import { User } from "@/mongo/Models";
+import { User, Vote } from "@/mongo/Models";
 import DBRequest from "@/types/DBRequest";
 import { ILoginUser, INewUser } from "@/types/UserType";
 import { Response } from "express";
 import bcrypt from 'bcrypt';
+import { isValidObjectId } from "mongoose";
 
 export default class UserController {
   static async createUser(req: DBRequest, res: Response) {
@@ -27,10 +28,10 @@ export default class UserController {
     try {
       const userData: ILoginUser = { ...req.body };
       const user = await User.findOne({$or: [{email: userData.username}, {username: userData.username}]});
-      console.log(userData);
       if (!user) {
         throw new Error("user credentials is wrong");
       }
+      console.log(userData);
       if (!bcrypt.compareSync(userData.password + process.env.SALT_TEXT, user.password)) {
         throw new Error('invalid password');
       }
@@ -73,5 +74,40 @@ export default class UserController {
         res.redirect('/');
       })
   })
+  }
+
+  static async vote(req: DBRequest, res: Response) {
+    const pollId = req.params.id || null;
+    const user = req.session.user || null;
+    const optionSelected = req.body.selectedOption || null;
+
+    if (!pollId || !isValidObjectId(pollId)) {
+      return res.status(400).json({'error': 'invalid vote id'});
+    }
+    if (!user) {
+      return res.status(401).json({'error': 'Unauthorized'});
+    }
+    if (!optionSelected || !isValidObjectId(optionSelected)) {
+      return res.status(400).json({error: 'invalid option selected'});
+    }
+    try {
+      const vote = await Vote.create({
+        pollId,
+        userId: user.id,
+        optionSelected: optionSelected
+      });
+      return res.status(201).json({
+        pollId,
+        userId: vote.userId,
+        optionSelected: vote.optionSelected
+      });
+    } catch (error) {
+      res.status(500).json({error: 'something went wrong'});
+    }
+    return 
+  }
+
+  static async subscribe(req: DBRequest, res: Response) {
+
   }
 }

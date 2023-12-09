@@ -4,7 +4,7 @@ import { init } from '@/middlewares/initMiddleware';
 import bodyParser from 'body-parser';
 import ESess from 'express-session';
 import UsersRoute from '@/routes/UserRoutes';
-import VotesRoutes from './routes/VotesRoute';
+import VotesRoutes from '@/routes/VotesRoute';
 
 EnvLoader.loadEnv();
 
@@ -19,7 +19,7 @@ app.use(ESess({
   resave: false,
   saveUninitialized: true,
 }));
-app.use(UsersRoute);
+app.use("/users", UsersRoute);
 app.use("/votes", VotesRoutes);
 
 app.listen(PORT, () => {
